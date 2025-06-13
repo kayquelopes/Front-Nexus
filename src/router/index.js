@@ -9,6 +9,11 @@ const router = createRouter({
       name: 'cadHqsView',
       component: cadHqsView,
     },
+    {
+      path: '/confirm',
+      name: 'confirmHqs',
+      component: () => import('../views/confirmHqsView.vue'),
+    },
   ],
 })
 

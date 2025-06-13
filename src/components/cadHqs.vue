@@ -168,7 +168,7 @@
             </div>
           </div>
         </div>
-        <div class="grupo3"><button type="submit" class="submit-button">Cadastrar</button></div>
+        <div class="grupo3"><button type="submit" @click="irParaDestino" class="submit-button">Cadastrar</button></div>
       </form>
     </div>
   </div>
@@ -176,6 +176,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const form = ref({
   nome: '',
@@ -196,11 +198,34 @@ const handleFileUpload = (event) => {
   form.value.capa = event.target.files[0]
 }
 
-// Submit form
 const submitForm = () => {
-  console.log('Formulário enviado:', form.value)
-  alert('Cadastro realizado com sucesso!')
-  resetForm()
+  // Simular envio, validações ou API call aqui
+  const formValido = validarFormulario()
+  if (formValido) {
+    console.log('Formulário enviado:', form.value)
+    alert('Cadastro realizado com sucesso!')
+    resetForm()
+    router.push('/confirm') // Só redireciona após tudo estar certo
+  } else {
+    alert('Por favor, preencha todos os campos corretamente.')
+  }
+}
+const validarFormulario = () => {
+  const f = form.value
+  return (
+    f.nome &&
+    f.autor &&
+    f.genero &&
+    f.idioma &&
+    f.status &&
+    f.dataLancamento &&
+    f.classificacao &&
+    f.editora &&
+    f.sinopse &&
+    f.capa &&
+    f.quantidadeCapitulos &&
+    f.frequencia
+  )
 }
 
 // Reset form
