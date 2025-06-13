@@ -252,7 +252,7 @@ const resetForm = () => {
   justify-content: center;
   align-items: center;
   min-height: 1080px;
-  background-image: url('public/Imagens/Captura%20de%20tela%202025-06-10%20133854.png');
+  background-image: url('Imagens/Captura%20de%20tela%202025-06-10%20133854.png');
   background-size: cover;
   background-repeat: no-repeat;
 }

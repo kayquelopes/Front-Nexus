@@ -16,7 +16,7 @@
   justify-content: center;
   height: 100vh;
   text-align: center;
-  background-image: url('/public/Imagens/deadpool-has-biggest-opening-day-ever-for-an-r-rat_bekt.jpg');
+  background-image: url('Imagens/deadpool-has-biggest-opening-day-ever-for-an-r-rat_bekt.jpg');
   background-size: cover;
   background-position: center;
   color: white;
