@@ -288,7 +288,7 @@ const resetForm = () => {
 /*input*/
 input[type='text'],
 input[type='number'] {
-  width: 400px;
+  width: 390px;
   height: 36px;
   border: 3px solid #555;
   border-radius: 20px;
@@ -331,10 +331,11 @@ input[type="file"]::file-selector-button{
   width: 223px;
   height: 56px;
   padding: 10px;
-  background-color: #007bff;
+  background-color: #0e2a9e;
   color: white;
   border: none;
-  border-radius: 5px;
+  margin: 25.5px 491px 36px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
