@@ -56,13 +56,9 @@
                 <label for="classificacao">Classificação indicativa:</label>
                 <select v-model="form.classificacao" id="classificacao" required>
                   <option value="">Selecione a classificação</option>
-                  <option value="Livre">Livre</option>
-                  <option value="10 anos">10 anos</option>
-                  <option value="12 anos">12 anos</option>
-                  <option value="14 anos">14 anos</option>
-                  <option value="16 anos">16 anos</option>
-                  <option value="18 anos">18 anos</option>
-                  <!-- Adicione mais opções conforme necessário -->
+                  <option v-for="classificacao in classificacoes" :key="classificacao.id" :value="classificacao.id">
+                    {{ classificacao.nome }}
+                  </option>
                 </select>
               </div>
 
@@ -97,16 +93,9 @@
               <label for="frequencia">Frequência de publicação:</label>
               <select v-model="form.frequencia" id="frequencia" required>
                 <option value="">Selecione a frequência</option>
-                <option value="Diária">Diária</option>
-                <option value="Semanal">Semanal</option>
-                <option value="Quinzenal">Quinzenal</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Bimestral">Bimestral</option>
-                <option value="Trimestral">Trimestral</option>
-                <option value="Semestral">Semestral</option>
-                <option value="Anual">Anual</option>
-                <option value="Indefinida">Indefinida</option>
-                <!-- Adicione mais opções conforme necessário -->
+                <option v-for="frequencia in frequencias" :key="frequencia.id" :value="frequencia.id">
+                  {{ frequencia.nome }}
+                </option>
               </select>
             </div>
           </div>
@@ -117,11 +106,9 @@
       </form>
     </div>
   </div>
-  {{ idiomas }}
 </template>
 
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../plugins/axios'
@@ -129,12 +116,18 @@ import api from '../plugins/axios'
 const router = useRouter()
 const generos = ref([])
 const idiomas = ref([])
+const classificacoes = ref([])
+const frequencias = ref([])
 
 onMounted(async () => {
   let gnrs  = await api.get('generos')
   generos.value = gnrs.data
   let idms  = await api.get('idiomas')
   idiomas.value = idms.data
+  let clsf  = await api.get('classificacoes')
+  classificacoes.value = clsf.data.results
+  let frqn  = await api.get('frequencias')
+  frequencias.value = frqn.data.results
 })
 const form = ref({
   nome: '',
@@ -143,6 +136,7 @@ const form = ref({
   idioma: '',
   status: '',
   dataLancamento: '',
+  classificacao: '',
   editora: '',
   sinopse: '',
   capa: null,
@@ -175,6 +169,7 @@ const validarFormulario = () => {
     f.idioma &&
     f.status &&
     f.dataLancamento &&
+    f.classificacao &&
     f.editora &&
     f.sinopse &&
     f.capa &&
@@ -192,6 +187,7 @@ const resetForm = () => {
     idioma: '',
     status: '',
     dataLancamento: '',
+    classificacao: '',
     editora: '',
     sinopse: '',
     capa: null,
@@ -205,20 +201,16 @@ const resetForm = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 1080px;
-  background-image: url('Imagens/Captura%20de%20tela%202025-06-10%20133854.png');
-  background-size: cover;
-  background-repeat: no-repeat;
+  background-color: rgb(28, 28, 28);
 }
 
 .form-background {
   min-width: 1200px;
   min-height: 600px;
-  margin: 100px 162px;
+  margin: 25px 162px;
   background-image: linear-gradient(to bottom right, #0e2a9ebf, #9e0e2bbf);
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  display: column;
   color: white;
 }
 
@@ -242,7 +234,7 @@ const resetForm = () => {
 .grupo2 {
   display: flex;
   flex-direction: row;
-  margin: 21px 101px 55px;
+  margin: 21px 101px 15px;
 }
 
 .grupo2-1 {
