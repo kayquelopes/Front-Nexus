@@ -19,76 +19,19 @@
               <label for="genero">Gênero(s):</label>
               <select v-model="form.genero" id="genero" required>
                 <option value="">Selecione o gênero</option>
-                <option value="Ação">Ação</option>
-                <option value="Aventura">Aventura</option>
-                <option value="Animação">Animação</option>
-                <option value="Comédia">Comédia</option>
-                <option value="Comédia Romântica">Comédia Romântica</option>
-                <option value="Crime">Crime</option>
-                <option value="Documentário">Documentário</option>
-                <option value="Drama">Drama</option>
-                <option value="Espionagem">Espionagem</option>
-                <option value="Fantasia">Fantasia</option>
-                <option value="Faroeste">Faroeste</option>
-                <option value="Ficção Científica">Ficção Científica</option>
-                <option value="Guerra">Guerra</option>
-                <option value="Histórico">Histórico</option>
-                <option value="Mistério">Mistério</option>
-                <option value="Musical">Musical</option>
-                <option value="Noir">Noir</option>
-                <option value="Policial">Policial</option>
-                <option value="Reality Show">Reality Show</option>
-                <option value="Romance">Romance</option>
-                <option value="Romance Histórico">Romance Histórico</option>
-                <option value="Suspense">Suspense</option>
-                <option value="Terror">Terror</option>
-                <option value="Thriller Psicológico">Thriller Psicológico</option>
-                <option value="Zumbi">Zumbi</option>
-                <option value="Super-Herói">Super-Herói</option>
-                <option value="Anime">Anime</option>
-                <option value="Slice of Life">Slice of Life</option>
-                <option value="Esportes">Esportes</option>
-                <option value="Magia">Magia</option>
-
-                <!-- Adicione mais opções conforme necessário -->
+                <option v-for="genero in generos" :key="genero.id" :value="genero.id">
+                  {{ genero.nome }}
+                </option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="idioma">Gênero(s):</label>
+              <label for="idioma">Idioma:</label>
               <select v-model="form.idioma" id="idioma" required>
                 <option value="">Selecione o idioma</option>
-                <option value="pt">Português</option>
-                <option value="en">Inglês</option>
-                <option value="es">Espanhol</option>
-                <option value="fr">Francês</option>
-                <option value="de">Alemão</option>
-                <option value="it">Italiano</option>
-                <option value="ru">Russo</option>
-                <option value="zh">Chinês (Mandarim)</option>
-                <option value="ja">Japonês</option>
-                <option value="ko">Coreano</option>
-                <option value="ar">Árabe</option>
-                <option value="hi">Hindi</option>
-                <option value="tr">Turco</option>
-                <option value="pl">Polonês</option>
-                <option value="nl">Holandês</option>
-                <option value="sv">Sueco</option>
-                <option value="fi">Finlandês</option>
-                <option value="da">Dinamarquês</option>
-                <option value="no">Norueguês</option>
-                <option value="el">Grego</option>
-                <option value="he">Hebraico</option>
-                <option value="vi">Vietnamita</option>
-                <option value="th">Tailandês</option>
-                <option value="cs">Tcheco</option>
-                <option value="hu">Húngaro</option>
-                <option value="ro">Romeno</option>
-                <option value="id">Indonésio</option>
-                <option value="ms">Malaio</option>
-                <option value="uk">Ucraniano</option>
-                <option value="bg">Búlgaro</option>
-                <!-- Adicione mais opções conforme necessário -->
+                <option v-for="idioma in idiomas" :key="idioma.id" :value="idioma.id">
+                  {{ idioma.nome }}
+                </option>
               </select>
             </div>
 
@@ -168,17 +111,31 @@
             </div>
           </div>
         </div>
-        <div class="grupo3"><button type="submit" @click="irParaDestino" class="submit-button">Cadastrar</button></div>
+        <div class="grupo3">
+          <button type="submit" @click="irParaDestino" class="submit-button">Cadastrar</button>
+        </div>
       </form>
     </div>
   </div>
+  {{ idiomas }}
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import axios from 'axios'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-const router = useRouter()
+import api from '../plugins/axios'
 
+const router = useRouter()
+const generos = ref([])
+const idiomas = ref([])
+
+onMounted(async () => {
+  let gnrs  = await api.get('generos')
+  generos.value = gnrs.data
+  let idms  = await api.get('idiomas')
+  idiomas.value = idms.data
+})
 const form = ref({
   nome: '',
   autor: '',
@@ -186,7 +143,6 @@ const form = ref({
   idioma: '',
   status: '',
   dataLancamento: '',
-  classificacao: '',
   editora: '',
   sinopse: '',
   capa: null,
@@ -219,7 +175,6 @@ const validarFormulario = () => {
     f.idioma &&
     f.status &&
     f.dataLancamento &&
-    f.classificacao &&
     f.editora &&
     f.sinopse &&
     f.capa &&
@@ -237,7 +192,6 @@ const resetForm = () => {
     idioma: '',
     status: '',
     dataLancamento: '',
-    classificacao: '',
     editora: '',
     sinopse: '',
     capa: null,
@@ -348,7 +302,7 @@ textarea {
   border: 1px solid #555;
   border-radius: 20px;
 }
-input[type="file"]::file-selector-button{
+input[type='file']::file-selector-button {
   border-radius: 20px;
 }
 /*Button*/
