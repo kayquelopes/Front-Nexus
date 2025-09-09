@@ -101,7 +101,7 @@
           </div>
         </div>
         <div class="grupo3">
-          <button type="submit" @click="irParaDestino" class="submit-button">Cadastrar</button>
+          <button type="submit" class="submit-button">Cadastrar</button>
         </div>
       </form>
     </div>

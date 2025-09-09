@@ -1,9 +1,10 @@
 <script setup>
-import cadHqs from '../components/cadHqs.vue'
+import login from '../components/loginUser.vue'
 </script>
 
 <template>
   <main>
-    <cadHqs />
+    <login />
   </main>
 </template>
+

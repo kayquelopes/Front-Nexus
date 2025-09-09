@@ -1,13 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import cadHqsView from '../views/cadHqsView.vue'
+import loginView from '../views/loginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'cadHqsView',
-      component: cadHqsView,
+      name: 'login',
+      component: loginView,
+    },
+    {
+      path: '/cadastroUser',
+      name: 'cadastroView',
+      component: () => import('../views/cadastroView.vue'),
+    },
+    {
+      path: '/cadastroHqs',
+      name: 'cadastroHqs',
+      component: () => import('../views/cadastroHqsView.vue'),
     },
     {
       path: '/confirm',
