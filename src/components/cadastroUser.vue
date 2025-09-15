@@ -1,39 +1,107 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import api from '../plugins/axios'
 
-const email = ref('')
-const password = ref('')
-const username = ref('')
+const router = useRouter()
+
+const form = ref({
+  email: '',
+  password: '',
+  name: ''
+})
+
+// Função para validar o formulário
+const validarFormulario = () => {
+  const f = form.value
+
+  if (!f.email || !f.password || !f.name) {
+    alert("Preencha todos os campos!")
+    return false
+  }
+
+  // Validação simples de e-mail
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)
+  if (!emailValido) {
+    alert("E-mail inválido!")
+    return false
+  }
+
+  // Senha deve ter no mínimo 6 caracteres
+  if (f.password.length < 6) {
+    alert("A senha deve ter pelo menos 6 caracteres!")
+    return false
+  }
+
+  return true
+}
+
+// Função para resetar o formulário
+const resetForm = () => {
+  form.value = {
+    email: '',
+    password: '',
+    name: ''
+  }
+}
+
+// Função de envio do formulário
+const submitForm = () => {
+  if (!validarFormulario()) {
+    return
+  }
+
+  api.post('/usuarios/', {
+    email: form.value.email,
+    password: form.value.password,
+    name: form.value.name
+  })
+    .then(response => {
+      console.log('Usuário cadastrado com sucesso:', response.data)
+      resetForm()
+      router.push('/cadastroHqs')
+    })
+    .catch(error => {
+      console.error('Erro ao cadastrar usuário:', error)
+      alert('Erro ao cadastrar usuário. Tente novamente.')
+    })
+}
 </script>
+
 <template>
   <main>
     <div class="container">
       <div class="background-form">
         <div class="transition-Page">
-          <div class="signIn"><router-link to="/" style="color: white; text-decoration: none;">Sign In</router-link></div>
-          <div class="signUp"><router-link to="/cadastroUser" style="color: black; text-decoration: none;">Sign Up</router-link></div>
+          <div class="signIn">
+            <router-link to="/" style="color: white; text-decoration: none;">Sign In</router-link>
+          </div>
+          <div class="signUp">
+            <router-link to="/cadastroUser" style="color: black; text-decoration: none;">Sign Up</router-link>
+          </div>
         </div>
-        <form @submit.prevent="">
+        <form @submit.prevent="submitForm">
           <div class="email-cadastro">
             <label for="email">Email:</label>
-            <input type="email" id="email" v-model="email" required />
+            <input type="email" id="email" v-model="form.email" required />
           </div>
           <div class="password-cadastro">
             <label for="password">Password:</label>
-            <input type="password" id="password" v-model="password" required />
+            <input type="password" id="password" v-model="form.password" required />
           </div>
           <div class="user-cadastro">
             <label for="username">Username:</label>
-            <input type="text" id="username" v-model="username" required />
+            <input type="text" id="username" v-model="form.name" required />
           </div>
           <div class="submit-cadastro">
-            <button type="submit">Login</button>
+            <button type="submit">Cadastrar</button>
           </div>
         </form>
       </div>
     </div>
   </main>
 </template>
+
 <style scoped>
 .container {
   width: auto;
@@ -42,6 +110,7 @@ const username = ref('')
   padding: 16px;
   background-color: #333;
 }
+
 .background-form {
   width: 400px;
   margin: 210px auto;
@@ -65,6 +134,7 @@ const username = ref('')
   width: 240px;
   height: 40px;
 }
+
 .signIn {
   width: 120px;
   height: 40px;
@@ -78,6 +148,7 @@ const username = ref('')
   justify-content: center;
   align-items: center;
 }
+
 .signUp {
   cursor: pointer;
   font-size: 1.2em;
@@ -88,8 +159,7 @@ const username = ref('')
 form {
   display: flex;
   flex-direction: column;
-  background-color: rgb(255, 255, 255, 0);
-
+  background-color: transparent;
 }
 
 .email-cadastro, .password-cadastro, .submit-cadastro, .user-cadastro {
@@ -126,3 +196,6 @@ button:hover {
   background-color: #050F38;
 }
 </style>
+
+
+

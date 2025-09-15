@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '../plugins/axios' // seu Axios configurado
 
 const router = useRouter()
 
@@ -8,32 +9,39 @@ const form = ref({
   email: '',
   password: ''
 })
-const submitForm = () => {
-  // Simular envio, validações ou API call aqui
-  const formValido = validarFormulario()
-  if (formValido) {
-    console.log('Formulário enviado:', form.value)
-    resetForm()
-    router.push('/cadastroHqs')
-  } else {
+
+const submitForm = async () => {
+  if (!validarFormulario()) {
     alert('Por favor, preencha todos os campos corretamente.')
+    return
+  }
+  try {
+    const response = await api.post('http://127.0.0.1:8000/api/token/', {
+      email: form.value.email,
+      password: form.value.password
+    })
+
+    // Guardar tokens no localStorage
+    localStorage.setItem('accessToken', response.data.access)
+    localStorage.setItem('refreshToken', response.data.refresh)
+
+    console.log('Login bem-sucedido!', response.data)
+    resetForm()
+    router.push('/cadastroHqs') // redireciona após login
+  } catch (error) {
+    console.error('Erro no login:', error.response.data)
+    alert('Usuário e/ou senha incorreto(s).')
   }
 }
+
 const validarFormulario = () => {
   const f = form.value
-  return (
-    f.email &&
-    f.password
-  )
+  return f.email && f.password
 }
 
 const resetForm = () => {
-  form.value = {
-    email: '',
-    password: ''
-  }
+  form.value = { email: '', password: '' }
 }
-
 </script>
 <template>
   <main>
