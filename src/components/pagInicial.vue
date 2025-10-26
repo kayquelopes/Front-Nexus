@@ -71,7 +71,7 @@ onMounted(() => {
         <div class="card" v-for="hq in quadrinhos" :key="hq.id">
           <div class="card-image">
             <img
-              :src="hq.capa ? 'http://127.0.0.1:8000' + hq.capa : '../../public/Imagens/image.jpeg'"
+              :src="hq.capa ? 'http://127.0.0.1:8000' + hq.capa : '/Imagens/image.jpeg'"
               :alt="hq.nome"
             />
           </div>
