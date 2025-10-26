@@ -120,14 +120,23 @@ const classificacoes = ref([])
 const frequencias = ref([])
 
 onMounted(async () => {
-  let gnrs  = await api.get('generos')
-  generos.value = gnrs.data
-  let idms  = await api.get('idiomas')
-  idiomas.value = idms.data
-  let clsf  = await api.get('classificacoes')
-  classificacoes.value = clsf.data.results
-  let frqn  = await api.get('frequencias')
-  frequencias.value = frqn.data.results
+  try {
+    const gnrs = await api.get('generos/')
+    generos.value = gnrs.data
+
+    const idms = await api.get('idiomas/')
+    idiomas.value = idms.data
+
+    const clsf = await api.get('classificacoes/')
+    classificacoes.value = clsf.data.results
+
+    const frqn = await api.get('frequencias/')
+    frequencias.value = frqn.data.results
+
+  } catch (error) {
+    console.error('Erro ao carregar dados da API:', error)
+    alert('Não foi possível carregar os dados do backend. Verifique se a API está online.')
+  }
 })
 const form = ref({
   nome: '',
