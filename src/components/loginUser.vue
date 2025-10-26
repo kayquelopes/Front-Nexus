@@ -27,7 +27,7 @@ const submitForm = async () => {
 
     console.log('Login bem-sucedido!', response.data)
     resetForm()
-    router.push('/pagInicial') // redireciona após login
+    router.push('/pagInicial/') // redireciona após login
   } catch (error) {
     console.error('Erro no login:', error.response.data)
     alert('Usuário e/ou senha incorreto(s).')
