@@ -29,6 +29,11 @@ const router = createRouter({
       name: 'confirmHqs',
       component: () => import('../views/confirmHqsView.vue'),
     },
+    {
+      path: '/hq/:id',
+      name: 'hqDetalhe',
+      component: () => import('../components/HQPage.vue'),
+    },
   ],
 })
 
