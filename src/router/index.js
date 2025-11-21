@@ -34,7 +34,13 @@ const router = createRouter({
       name: 'hqDetalhe',
       component: () => import('../components/HQPage.vue'),
     },
+    {
+      path: '/me',
+      name: 'UserProfile',
+      component: () => import('../components/UserProfile.vue'),
+    },
   ],
 })
+
 
 export default router

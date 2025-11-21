@@ -1,15 +1,22 @@
-import axios from 'axios'
+import axios from "axios"
+
+let cancelToken
 
 const api = axios.create({
-  baseURL: 'https://backend-nexus-digv.onrender.com/api/'
+ baseURL: 'http://127.0.0.1:8000/'
 })
 
-// Interceptor para enviar token JWT automaticamente
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('accessToken')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  if (cancelToken) {
+    cancelToken.cancel("Cancelando requisição anterior")
   }
+
+  cancelToken = axios.CancelToken.source()
+  config.cancelToken = cancelToken.token
+
+  const token = localStorage.getItem("accessToken")
+  if (token) config.headers.Authorization = `Bearer ${token}`
+
   return config
 })
 

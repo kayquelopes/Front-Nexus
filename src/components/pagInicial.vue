@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '../plugins/axios' // <-- usa SOMENTE ESTE
 
 // Array que vai armazenar todas as HQs carregadas
 const quadrinhos = ref([])
@@ -14,7 +14,7 @@ async function fetchQuadrinhos() {
   if (!hasNext.value) return
 
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/hqs/?page=${nextPage.value}`)
+    const response = await api.get(`hqs/?page=${nextPage.value}`)
     const data = response.data
 
     // Adiciona as novas HQs ao array existente
@@ -49,7 +49,7 @@ onMounted(() => {
       <nav>
         <ul class="menu">
           <li class="menu-item"><router-link to="/pagInicial">Home</router-link></li>
-          <li class="menu-item"><router-link to="/perfil">Perfil</router-link></li>
+          <li class="menu-item"><router-link to="/me">Perfil</router-link></li>
           <li class="menu-item"><router-link to="/sobreNos">Sobre Nós</router-link></li>
         </ul>
       </nav>
@@ -68,22 +68,18 @@ onMounted(() => {
 
       <!-- Catálogo de HQs -->
       <div class="catalogo-inicial">
-        <div class="card" v-for="hq in quadrinhos" :key="hq.id">
-          <div class="card-image">
-            <img
-              :src="hq.capa ? 'http://127.0.0.1:8000' + hq.capa : '/Imagens/image.jpeg'"
-              :alt="hq.nome"
-            />
+        <div class="card-container" v-for="hq in quadrinhos" :key="hq.id">
+          <!-- Card só com a imagem -->
+          <div class="card">
+            <div class="card-image">
+              <img :src="hq.capa || '/Imagens/image.jpeg'" :alt="hq.nome" />
+            </div>
           </div>
-          <div class="card-content">
-            <h3 class="nome">{{ hq.nome }}</h3>
-            <p class="ano">
-              <strong>Ano:</strong> {{ new Date(hq.data_lancamento).getFullYear() }}
-            </p>
-            <p class="autor"><strong>Autor:</strong> {{ hq.autor.nome }}</p>
-            <p class="genero"><strong>Gênero:</strong> {{ hq.genero.nome }}</p>
-            <router-link :to="`/hq/${hq.id}`" class="btn-leia"> Leia Agora </router-link>
-          </div>
+
+          <!-- Nome fora do card -->
+          <h3 class="nome">
+            <router-link :to="`/hq/${hq.id}`" class="link">{{ hq.nome }}</router-link>
+          </h3>
         </div>
       </div>
 
@@ -92,6 +88,9 @@ onMounted(() => {
         <button class="btn-carregar" @click="fetchQuadrinhos">Carregar mais HQs</button>
       </div>
     </div>
+    <footer class="footer">
+      <p>© 2025 Nexus. Todos os direitos reservados.</p>
+    </footer>
   </div>
 </template>
 
@@ -183,21 +182,24 @@ h1 {
   margin-top: 40px;
 }
 
-.card {
+/* Container que segura card + nome */
+.card-container {
   width: 300px;
-  height: 415px;
+  text-align: center;
+}
+
+/* Card agora é só a imagem */
+.card {
+  width: 250px;
+  height: 350px;
   background: #ffffff;
   border: 2px solid #000000;
   border-radius: 10px;
-  overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   transition:
     transform 0.3s,
     box-shadow 0.3s;
-  font-family: Arial, sans-serif;
   cursor: pointer;
-  flex: 0 0 calc(20% - 16px); /* 5 cards por linha */
-  box-sizing: border-box;
 }
 
 .card:hover {
@@ -205,62 +207,41 @@ h1 {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
-.card-image img {
+.card-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
+  overflow: hidden;
   object-fit: cover;
+  border: 2px solid #9e0e2b;
+  border-radius: 10px;
 }
 
-.card-content {
-  padding: 15px;
+.card-image img {
+ width: 250px;
+  height: 350px;
+  border-radius: 10px;
 }
 
-h3 {
-  margin: 0;
-  font-size: 1.3rem;
-  color: #000000;
-}
-
-.ano,
-.autor,
-.genero {
-  margin: 5px 0;
-  font-size: 0.95rem;
-  color: #000000;
-}
-
-.btn-leia {
-  display: inline-block;
-  padding: 8px 15px;
-  background-color: #9e0e2b;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Nome embaixo */
+.nome {
   margin-top: 10px;
-  transition: background-color 0.3s;
+  font-size: 18px;
+  color: white;
 }
 
-.btn-leia:hover {
-  background-color: #38050f;
+.nome .link {
+  text-decoration: none;
+  color: white;
 }
 
-.btn-container {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.btn-carregar {
-  padding: 10px 20px;
-  background-color: #9e0e2b;
+.footer {
+  background-color: #111;
   color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-carregar:hover {
-  background-color: #38050f;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  bottom: 0;
+  left: 0;
+  width: 1445px;
 }
 </style>

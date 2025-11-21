@@ -11,12 +11,14 @@ const form = ref({
 })
 
 const submitForm = async () => {
+  console.log("URL chamada:", api.defaults.baseURL + "token/");
+
   if (!validarFormulario()) {
     alert('Por favor, preencha todos os campos corretamente.')
     return
   }
   try {
-    const response = await api.post('http://127.0.0.1:8000/api/token/', {
+    const response = await api.post('token/', {
       email: form.value.email,
       password: form.value.password
     })
