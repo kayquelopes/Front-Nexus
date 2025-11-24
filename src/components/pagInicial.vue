@@ -15,6 +15,7 @@ async function fetchQuadrinhos() {
 
   try {
     const response = await api.get(`hqs/?page=${nextPage.value}`)
+    console.log('Resposta API:', response.data) // 👈 veja se vem algo
     const data = response.data
 
     // Adiciona as novas HQs ao array existente
@@ -72,7 +73,16 @@ onMounted(() => {
           <!-- Card só com a imagem -->
           <div class="card">
             <div class="card-image">
-              <img :src="hq.capa || '/Imagens/image.jpeg'" :alt="hq.nome" />
+              <img
+                :src="
+                  hq.capa
+                    ? hq.capa.startsWith('http')
+                      ? hq.capa
+                      : 'http://127.0.0.1:8000' + hq.capa
+                    : '/Imagens/image.jpeg'
+                "
+                :alt="hq.nome"
+              />
             </div>
           </div>
 
@@ -217,7 +227,7 @@ h1 {
 }
 
 .card-image img {
- width: 250px;
+  width: 250px;
   height: 350px;
   border-radius: 10px;
 }

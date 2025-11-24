@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import api from '../plugins/axios' // <-- usa SOMENTE ESTE
+import api from '../plugins/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +16,7 @@ const jaSalvou = ref(false)
 const likeId = ref(null)
 const saveId = ref(null)
 
+// Token do localStorage
 const token = localStorage.getItem('accessToken') || localStorage.getItem('token')
 
 // popup
@@ -32,21 +33,23 @@ async function fetchHQ() {
   try {
     const response = await api.get(`hqs/${route.params.id}/`)
     hq.value = response.data
-
     paginas.value = hq.value.paginas || []
     urls.value = hq.value.urls || []
 
-    await verificarCurtida()
-    await verificarSalvo()
+    if (token) {
+      await verificarCurtida()
+      await verificarSalvo()
+    }
   } catch (error) {
     console.error('Erro ao carregar HQ:', error)
+    mostrarMensagem('Erro ao carregar HQ.')
   }
 }
 
 // ------------------ VERIFICAR CURTIDA ------------------
 async function verificarCurtida() {
   try {
-    const res = await api.get('curtidas/')
+    const res = await api.get('likes/')
     const lista = Array.isArray(res.data) ? res.data : res.data.results || []
     const encontrada = lista.find((item) => item.hq === hq.value.id)
     if (encontrada) {
@@ -57,7 +60,6 @@ async function verificarCurtida() {
       likeId.value = null
     }
   } catch (error) {
-    // se não autenticado, ignora (mantém false)
     console.error('Erro ao verificar curtida:', error)
   }
 }
@@ -65,7 +67,7 @@ async function verificarCurtida() {
 // ------------------ VERIFICAR SALVO ------------------
 async function verificarSalvo() {
   try {
-    const res = await api.get('salvos/')
+    const res = await api.get('saves/')
     const lista = Array.isArray(res.data) ? res.data : res.data.results || []
     const encontrado = lista.find((item) => item.hq === hq.value.id)
     if (encontrado) {
@@ -80,22 +82,19 @@ async function verificarSalvo() {
   }
 }
 
-// ------------------ TOGGLE CURTIR ------------------
 async function toggleCurtida() {
-  try {
-    if (!token) {
-      mostrarMensagem('Faça login para curtir.')
-      return
-    }
+  if (!token) return mostrarMensagem('Faça login para curtir.')
+  if (!hq.value?.id) return mostrarMensagem('HQ ainda não carregada.')
 
+  try {
     if (!jaCurtiu.value) {
-      const res = await api.post('curtidas/', { hq: hq.value.id })
+      const res = await api.post('likes/', { hq: Number(hq.value.id) })
       jaCurtiu.value = true
       likeId.value = res.data.id
       mostrarMensagem('Você curtiu esta HQ ❤️')
     } else {
       if (!likeId.value) return
-      await api.delete(`curtidas/${likeId.value}/`)
+      await api.delete(`likes/${likeId.value}/`)
       jaCurtiu.value = false
       likeId.value = null
       mostrarMensagem('Curtida removida')
@@ -106,22 +105,19 @@ async function toggleCurtida() {
   }
 }
 
-// ------------------ TOGGLE SALVO ------------------
 async function toggleSalvo() {
-  try {
-    if (!token) {
-      mostrarMensagem('Faça login para salvar.')
-      return
-    }
+  if (!token) return mostrarMensagem('Faça login para salvar.')
+  if (!hq.value?.id) return mostrarMensagem('HQ ainda não carregada.')
 
+  try {
     if (!jaSalvou.value) {
-      const res = await api.post('salvos/', { hq: hq.value.id })
+      const res = await api.post('saves/', { hq: Number(hq.value.id) })
       jaSalvou.value = true
       saveId.value = res.data.id
       mostrarMensagem('HQ salva com sucesso! ⭐')
     } else {
       if (!saveId.value) return
-      await api.delete(`salvos/${saveId.value}/`)
+      await api.delete(`saves/${saveId.value}/`)
       jaSalvou.value = false
       saveId.value = null
       mostrarMensagem('HQ removida dos salvos')
@@ -132,6 +128,8 @@ async function toggleSalvo() {
   }
 }
 
+
+// Abrir links externos
 function abrirLink(link) {
   window.open(link, '_blank')
 }
@@ -153,12 +151,20 @@ onMounted(fetchHQ)
 
       <!-- ações -->
       <div class="acoes">
-        <button :class="['btn-action', jaCurtiu ? 'active-like' : '']" @click="toggleCurtida">
+        <button
+          :class="['btn-action', jaCurtiu ? 'active-like' : '']"
+          @click="toggleCurtida"
+          :disabled="!hq"
+        >
           <span class="icon">❤️</span>
           <span class="txt">{{ jaCurtiu ? 'Curtido' : 'Curtir' }}</span>
         </button>
 
-        <button :class="['btn-action', jaSalvou ? 'active-save' : '']" @click="toggleSalvo">
+        <button
+          :class="['btn-action', jaSalvou ? 'active-save' : '']"
+          @click="toggleSalvo"
+          :disabled="!hq"
+        >
           <span class="icon">⭐</span>
           <span class="txt">{{ jaSalvou ? 'Salvo' : 'Salvar' }}</span>
         </button>
@@ -212,7 +218,6 @@ onMounted(fetchHQ)
         </div>
         <div v-else><p>O conteúdo da HQ ainda não foi adicionado.</p></div>
       </div>
-
     </div>
 
     <div v-else class="carregando">
@@ -220,6 +225,7 @@ onMounted(fetchHQ)
     </div>
   </div>
 </template>
+
 
 <style scoped>
 /* ---------- Layout global (restaurado) ---------- */
@@ -445,18 +451,6 @@ onMounted(fetchHQ)
   font-weight: bold;
   z-index: 9999;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* footer */
-.footer {
-  background-color: #111;
-  color: #fff;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  bottom: 0;
-  left: 0;
-  width: 1445px;
 }
 
 /* carregando */
